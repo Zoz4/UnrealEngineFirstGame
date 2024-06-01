@@ -9,8 +9,11 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
 #include "UObject/ConstructorHelpers.h"
-
+#include "Components/ArrowComponent.h"
 #include "MyPlayerCharacter.generated.h"
 
 UCLASS()
@@ -37,6 +40,12 @@ public:
 public:
 	void MoveForward(float InputAxis);
 	void MoveRight(float InputAxis);
+	void Push();
+
+	UFUNCTION()
+	void OnPushEnded(UAnimMontage* Montage, bool bInterrupted);
+	UFUNCTION()
+	void OnAttackStarted(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
 protected:
 private:
@@ -50,5 +59,13 @@ protected:
 	// 玩家跟随摄像机
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class UCameraComponent* CameraComp;
+	// 箭头组件
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	class UArrowComponent* ArrowComp;
+	
 private:
+	UPROPERTY()
+	bool bCanPush = true;
+	class UAnimMontage* PushMontage;
+	
 };

@@ -12,6 +12,7 @@ AMyPlayerCharacter::AMyPlayerCharacter()
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+	ArrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComp"));
 
 	// 载入资源文件 SkeletalMesh 与 AnimBlueprint
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>MeshAsset(TEXT("/Script/Engine.SkeletalMesh'/Game/SCK_Casual01/Models/Premade_Characters/MESH_PC_03.MESH_PC_03'"));
@@ -30,9 +31,17 @@ AMyPlayerCharacter::AMyPlayerCharacter()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AnimBlueprint Not Found!"));
 	}
-
-
+	static ConstructorHelpers::FObjectFinder<UAnimMontage>PushMontageAsset(TEXT("/Script/Engine.AnimMontage'/Game/Characters/Mannequin_UE4/OurAnimations/Push_Montage.Push_Montage'"));
+	if (PushMontageAsset.Succeeded())
+	{
+		PushMontage = PushMontageAsset.Object;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PushMontageAsset Not Found!"));
+	}
 	
+	GetMesh()->SetupAttachment(GetCapsuleComponent());
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FQuat(FRotator(0.0f, -90.0f, 0.0f)));
 
 	 SpringArmComp->SetupAttachment(GetMesh());
@@ -46,12 +55,25 @@ AMyPlayerCharacter::AMyPlayerCharacter()
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	GetCharacterMovement()->bIgnoreBaseRotation = true;
 	bUseControllerRotationYaw = false;
+
+	ArrowComp->SetupAttachment(GetCapsuleComponent());
+	ArrowComp->SetRelativeLocation(FVector(60.0f, 0.0f, 50.0f));
 }
 
 // Called when the game starts or when spawned
 void AMyPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FScriptDelegate PushDelegateSubscriber;
+	PushDelegateSubscriber.BindUFunction(this, FName("OnPushEnded"));
+	GetMesh()->GetAnimInstance()->OnMontageEnded.Add(PushDelegateSubscriber);
+
+	FScriptDelegate AttackStartDelegateSubscriber;
+	AttackStartDelegateSubscriber.BindUFunction(this, FName("OnAttackStarted"));
+	GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.Add(AttackStartDelegateSubscriber);
+
+
 }
 
 // Called every frame
@@ -69,6 +91,7 @@ void AMyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMyPlayerCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAction("Push",IE_Pressed, this, &AMyPlayerCharacter::Push);
 }
 
 void AMyPlayerCharacter::MoveForward(float AxisValue)
@@ -100,4 +123,28 @@ void AMyPlayerCharacter::MoveRight(float AxisValue)
 		AddMovementInput(Direction, AxisValue);
 	}
 }
+
+void AMyPlayerCharacter::Push()
+{
+	if (bCanPush)
+	{
+		bCanPush = false;
+		GetMesh()->GetAnimInstance()->Montage_Play(PushMontage);
+	}
+}
+
+void AMyPlayerCharacter::OnPushEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if(Montage == PushMontage)
+		bCanPush = true;
+}
+
+void AMyPlayerCharacter::OnAttackStarted(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
+{
+	if (NotifyName=="StartPoint")
+	{
+		
+	}
+}
+
 
