@@ -143,8 +143,57 @@ void AMyPlayerCharacter::OnAttackStarted(FName NotifyName, const FBranchingPoint
 {
 	if (NotifyName=="StartPoint")
 	{
-		
+		FVector TraceStart = ArrowComp->GetComponentLocation();
+		FVector TraceEnd = TraceStart + ArrowComp->GetForwardVector() * 100.0f;
+		float TraceRadius = 30.0f;
+
+		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
+
+		TArray<AActor*> IgnoreActors;
+		IgnoreActors.Add(this);
+
+
+		FHitResult OutHit;
+
+		bool bHit = UKismetSystemLibrary::SphereTraceSingleForObjects(
+			GetWorld(), // 当前世界
+			TraceStart, // 追踪起始位置
+			TraceEnd, // 追踪结束位置
+			TraceRadius, // 追踪半径
+			ObjectTypes, // 追踪目标对象类型
+			false, // 是否执行复杂的碰撞检测
+			IgnoreActors, // 忽略的碰撞对象数组
+			EDrawDebugTrace::ForDuration, // 是否绘制调试线条
+			OutHit, // 返回的碰撞结果
+			true // 是否考虑查询复杂度
+		);
+
+		if (bHit)
+		{
+			// 打印命中结果
+			//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *(OutHit.GetActor()->GetName()));
+
+			ApplyDamage(OutHit.GetActor(), Damage);
+		}
+		else
+		{
+			//UE_LOG(LogTemp, Warning, TEXT("No Hit"));
+		}
+
 	}
+}
+
+void AMyPlayerCharacter::ApplyDamage(AActor* DamagedActor, float BaseDamage)
+{
+	UGameplayStatics::ApplyDamage(DamagedActor, BaseDamage, nullptr, this, nullptr);
+}
+
+float AMyPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	return ActualDamage;
 }
 
 

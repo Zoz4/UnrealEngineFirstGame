@@ -14,6 +14,10 @@
 #include "Animation/AnimMontage.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/ArrowComponent.h"
+
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
+
 #include "MyPlayerCharacter.generated.h"
 
 UCLASS()
@@ -47,6 +51,9 @@ public:
 	UFUNCTION()
 	void OnAttackStarted(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
+	void ApplyDamage(AActor* DamagedActor, float BaseDamage);
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 protected:
 private:
 
@@ -68,4 +75,6 @@ private:
 	bool bCanPush = true;
 	class UAnimMontage* PushMontage;
 	
+	float Health = 201.0f;
+	float Damage = 10.0f;
 };
