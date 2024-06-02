@@ -15,7 +15,7 @@ AMyPlayerCharacter::AMyPlayerCharacter()
 	ArrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComp"));
 
 	// 载入资源文件 SkeletalMesh 与 AnimBlueprint
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh>MeshAsset(TEXT("/Script/Engine.SkeletalMesh'/Game/SCK_Casual01/Models/Premade_Characters/MESH_PC_03.MESH_PC_03'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh>MeshAsset(TEXT("/Script/Engine.SkeletalMesh'/Game/SCK_Casual01/Models/Premade_Characters/MESH_PC_02.MESH_PC_02'"));
 	if (MeshAsset.Succeeded()) {
 		GetMesh()->SetSkeletalMesh(MeshAsset.Object);
 	}
@@ -45,7 +45,7 @@ AMyPlayerCharacter::AMyPlayerCharacter()
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FQuat(FRotator(0.0f, -90.0f, 0.0f)));
 
 	 SpringArmComp->SetupAttachment(GetMesh());
-
+	
 	// USpringArmComponent::SocketName: 将相机附加到弹簧末端
 	CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName);
 

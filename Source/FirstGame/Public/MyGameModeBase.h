@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 
 #include "MyPlayerCharacter.h"
+#include "MyEnemyCharacter.h"
 
 #include "MyGameModeBase.generated.h"
 
@@ -18,5 +19,5 @@ class FIRSTGAME_API AMyGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 	AMyGameModeBase();
-	
+
 };
