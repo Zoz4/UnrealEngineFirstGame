@@ -58,6 +58,9 @@ AMyPlayerCharacter::AMyPlayerCharacter()
 
 	ArrowComp->SetupAttachment(GetCapsuleComponent());
 	ArrowComp->SetRelativeLocation(FVector(60.0f, 0.0f, 50.0f));
+
+	// 死亡物理动画模拟
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 // Called when the game starts or when spawned
@@ -173,7 +176,6 @@ void AMyPlayerCharacter::OnAttackStarted(FName NotifyName, const FBranchingPoint
 		{
 			// 打印命中结果
 			//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *(OutHit.GetActor()->GetName()));
-
 			ApplyDamage(OutHit.GetActor(), Damage);
 		}
 		else
@@ -193,7 +195,30 @@ float AMyPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
+	//UE_LOG(LogTemp, Warning, TEXT("Player takes damage %f"), DamageAmount);
+	Health -= DamageAmount;
+	if (Health <= 0.0f)
+	{
+		GetMesh()->SetSimulatePhysics(true);
+
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		DisableInput(PlayerController);
+
+		if(!GetWorld()->GetTimerManager().IsTimerActive(DestoryTimerHandle))
+			GetWorld()->GetTimerManager().SetTimer(DestoryTimerHandle, this, &AMyPlayerCharacter::DestoryCharacter, 2.0f, false);
+	}
+	else
+	{
+		// 添加被击动作
+
+	}
+
 	return ActualDamage;
+}
+
+void AMyPlayerCharacter::DestoryCharacter()
+{
+	Destroy();
 }
 
 

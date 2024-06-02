@@ -53,12 +53,14 @@ public:
 
 	void ApplyDamage(AActor* DamagedActor, float BaseDamage);
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	void DestoryCharacter();
 
 protected:
 private:
 
 // Properties
 public:
+	friend class AMyEnemyAIController;
 protected:
 	// 跟随玩家背后摄像机的弹簧臂组件
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -75,6 +77,8 @@ private:
 	bool bCanPush = true;
 	class UAnimMontage* PushMontage;
 	
-	float Health = 201.0f;
+	float Health = 101.0f;
 	float Damage = 10.0f;
+
+	FTimerHandle DestoryTimerHandle;
 };

@@ -17,6 +17,8 @@
 #include "MyEnemyAIController.h"
 
 
+
+
 #include "MyEnemyCharacter.generated.h"
 
 
@@ -50,6 +52,7 @@ public:
 	void ApplyDamage(AActor* DamagedActor, float BaseDamage);
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	void ChasePlayer();
+	void DestoryCharacter();
 protected:
 private:
 
@@ -66,4 +69,5 @@ private:
 	bool bCanPush = true;
 	float Health = 10.0f;
 	float Damage = 10.0f;
+	FTimerHandle DestoryTimerHandle;
 };

@@ -2,7 +2,7 @@
 
 
 #include "MyEnemyCharacter.h"
-
+#include "MyPlayerCharacter.h"
 
 // Sets default values
 AMyEnemyCharacter::AMyEnemyCharacter()
@@ -24,6 +24,10 @@ AMyEnemyCharacter::AMyEnemyCharacter()
 	// 防止与相机发生碰撞
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	
+
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	
 
 }
 
@@ -101,10 +105,12 @@ void AMyEnemyCharacter::OnAttackStarted(FName NotifyName, const FBranchingPointN
 
 		if (bHit)
 		{
-			// 打印命中结果
-			//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *(OutHit.GetActor()->GetName()));
-
-			ApplyDamage(OutHit.GetActor(), Damage);
+			// 命中
+			if (AMyPlayerCharacter* HitPlayerCharacter = Cast<AMyPlayerCharacter>(OutHit.GetActor()))
+			{
+				// UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *(OutHit.GetActor()->GetName()));
+				ApplyDamage(OutHit.GetActor(), Damage);
+			}
 		}
 		else
 		{
@@ -120,7 +126,23 @@ void AMyEnemyCharacter::ApplyDamage(AActor* DamagedActor, float BaseDamage)
 
 float AMyEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	return 0.0f;
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy takes damage %f"), DamageAmount);
+	Health -= ActualDamage;
+	if (Health <= 0.0f)
+	{
+		GetMesh()->SetSimulatePhysics(true);
+		GetCharacterMovement()->DisableMovement();
+		GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+		GetWorld()->GetTimerManager().SetTimer(DestoryTimerHandle, this, &AMyEnemyCharacter::DestoryCharacter, 2.0f, false);
+	}
+	else
+	{
+		// 添加被攻击的动作
+
+	}
+	return ActualDamage;
 }
 
 void AMyEnemyCharacter::ChasePlayer()
@@ -128,6 +150,11 @@ void AMyEnemyCharacter::ChasePlayer()
 	AMyEnemyAIController* AIController = Cast<AMyEnemyAIController>(GetController());
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	AIController->MoveToActor(PlayerController->GetPawn());
+}
+
+void AMyEnemyCharacter::DestoryCharacter()
+{
+	Destroy();
 }
 
 void AMyEnemyCharacter::LoadAssets()

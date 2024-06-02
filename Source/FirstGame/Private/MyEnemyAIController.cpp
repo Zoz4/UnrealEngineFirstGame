@@ -28,14 +28,15 @@ void AMyEnemyAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFo
 {
     Super::OnMoveCompleted(RequestID, Result);
     
-    AMyEnemyCharacter* MyCharacter = Cast<AMyEnemyCharacter>(GetPawn());
-    
-    if (MyCharacter)
+    AMyEnemyCharacter* MyEnemyCharacter = Cast<AMyEnemyCharacter>(GetPawn());
+    APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+    AMyPlayerCharacter* MyPlayerCharacter = Cast<AMyPlayerCharacter>(PlayerController->GetPawn());
+    if (MyEnemyCharacter&& MyPlayerCharacter&& MyPlayerCharacter->Health>=0.0f)
     {
-    
-        if(MyCharacter->Health > 0.0f)
-            GetWorld()->GetTimerManager().SetTimer(PushTimeHandle, MyCharacter, &AMyEnemyCharacter::Push, 0.4f, false);
-        GetWorld()->GetTimerManager().SetTimer(ChasePlayerTimeHandle, MyCharacter, &AMyEnemyCharacter::ChasePlayer, 1.0f, false);
+        
+        if(MyEnemyCharacter->Health > 0.0f)
+            GetWorld()->GetTimerManager().SetTimer(PushTimeHandle, MyEnemyCharacter, &AMyEnemyCharacter::Push, 0.4f, false);
+        GetWorld()->GetTimerManager().SetTimer(ChasePlayerTimeHandle, MyEnemyCharacter, &AMyEnemyCharacter::ChasePlayer, 1.0f, false);
    
     }
 }

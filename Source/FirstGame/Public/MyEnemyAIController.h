@@ -6,7 +6,7 @@
 #include "AIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
-
+#include "MyPlayerCharacter.h"
 
 #include "MyEnemyAIController.generated.h"
 
