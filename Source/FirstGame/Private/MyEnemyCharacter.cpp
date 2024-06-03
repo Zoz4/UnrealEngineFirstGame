@@ -98,7 +98,7 @@ void AMyEnemyCharacter::OnAttackStarted(FName NotifyName, const FBranchingPointN
 			ObjectTypes, // 追踪目标对象类型
 			false, // 是否执行复杂的碰撞检测
 			IgnoreActors, // 忽略的碰撞对象数组
-			EDrawDebugTrace::ForDuration, // 是否绘制调试线条
+			EDrawDebugTrace::None, // 是否绘制调试线条
 			OutHit, // 返回的碰撞结果
 			true // 是否考虑查询复杂度
 		);
@@ -140,6 +140,14 @@ float AMyEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	else
 	{
 		// 添加被攻击的动作
+		AMyPlayerCharacter* PlayerCharacter = Cast<AMyPlayerCharacter>(DamageCauser);
+
+		if (PlayerCharacter)
+		{
+			FVector AttackDirection = PlayerCharacter->GetActorForwardVector();
+			FVector DamageDirection = AttackDirection * 150.0f + GetActorUpVector() * 100.0f;
+			LaunchCharacter(DamageDirection, false, false);
+		}
 
 	}
 	return ActualDamage;

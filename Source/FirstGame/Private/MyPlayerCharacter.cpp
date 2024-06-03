@@ -2,6 +2,7 @@
 
 
 #include "MyPlayerCharacter.h"
+#include "MyEnemyCharacter.h"
 
 // Sets default values
 AMyPlayerCharacter::AMyPlayerCharacter()
@@ -14,33 +15,8 @@ AMyPlayerCharacter::AMyPlayerCharacter()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	ArrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComp"));
 
-	// 载入资源文件 SkeletalMesh 与 AnimBlueprint
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh>MeshAsset(TEXT("/Script/Engine.SkeletalMesh'/Game/SCK_Casual01/Models/Premade_Characters/MESH_PC_02.MESH_PC_02'"));
-	if (MeshAsset.Succeeded()) {
-		GetMesh()->SetSkeletalMesh(MeshAsset.Object);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("SkeletalMesh Not Found!"));
-	}
-	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBPAsset(TEXT("/Script/Engine.AnimBlueprint'/Game/Characters/Mannequin_UE4/OurAnimations/ABP_Player.ABP_Player'"));
-	if (AnimBPAsset.Succeeded()) {
-		GetMesh()->SetAnimInstanceClass(AnimBPAsset.Object->GeneratedClass);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AnimBlueprint Not Found!"));
-	}
-	static ConstructorHelpers::FObjectFinder<UAnimMontage>PushMontageAsset(TEXT("/Script/Engine.AnimMontage'/Game/Characters/Mannequin_UE4/OurAnimations/Push_Montage.Push_Montage'"));
-	if (PushMontageAsset.Succeeded())
-	{
-		PushMontage = PushMontageAsset.Object;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("PushMontageAsset Not Found!"));
-	}
-	
+	LoadAssets();
+
 	GetMesh()->SetupAttachment(GetCapsuleComponent());
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FQuat(FRotator(0.0f, -90.0f, 0.0f)));
 
@@ -167,7 +143,7 @@ void AMyPlayerCharacter::OnAttackStarted(FName NotifyName, const FBranchingPoint
 			ObjectTypes, // 追踪目标对象类型
 			false, // 是否执行复杂的碰撞检测
 			IgnoreActors, // 忽略的碰撞对象数组
-			EDrawDebugTrace::ForDuration, // 是否绘制调试线条
+			EDrawDebugTrace::None, // 是否绘制调试线条
 			OutHit, // 返回的碰撞结果
 			true // 是否考虑查询复杂度
 		);
@@ -195,8 +171,9 @@ float AMyPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	//UE_LOG(LogTemp, Warning, TEXT("Player takes damage %f"), DamageAmount);
 	Health -= DamageAmount;
+	//UE_LOG(LogTemp, Warning, TEXT("Player takes damage %f"), DamageAmount);
+	//UE_LOG(LogTemp, Warning, TEXT("%f"), Health);
 	if (Health <= 0.0f)
 	{
 		GetMesh()->SetSimulatePhysics(true);
@@ -210,7 +187,17 @@ float AMyPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	else
 	{
 		// 添加被击动作
+		AMyEnemyCharacter* EnemyCharacter = Cast<AMyEnemyCharacter>(DamageCauser);
 
+		if (EnemyCharacter)
+		{
+
+
+			FVector AttackDirection = EnemyCharacter->GetActorForwardVector();
+			FVector DamageDirection = AttackDirection * 150.0f + GetActorUpVector() * 100.0f;
+
+			LaunchCharacter(DamageDirection, false, false);
+		}
 	}
 
 	return ActualDamage;
@@ -219,6 +206,37 @@ float AMyPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 void AMyPlayerCharacter::DestoryCharacter()
 {
 	Destroy();
+}
+
+void AMyPlayerCharacter::LoadAssets()
+{
+	// 载入资源文件 SkeletalMesh 与 AnimBlueprint
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh>MeshAsset(TEXT("/Script/Engine.SkeletalMesh'/Game/SCK_Casual01/Models/Premade_Characters/MESH_PC_02.MESH_PC_02'"));
+	if (MeshAsset.Succeeded()) {
+		GetMesh()->SetSkeletalMesh(MeshAsset.Object);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SkeletalMesh Not Found!"));
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBPAsset(TEXT("/Script/Engine.AnimBlueprint'/Game/Characters/Mannequin_UE4/OurAnimations/ABP_Player.ABP_Player'"));
+	if (AnimBPAsset.Succeeded()) {
+		GetMesh()->SetAnimInstanceClass(AnimBPAsset.Object->GeneratedClass);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AnimBlueprint Not Found!"));
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage>PushMontageAsset(TEXT("/Script/Engine.AnimMontage'/Game/Characters/Mannequin_UE4/OurAnimations/Push_Montage.Push_Montage'"));
+	if (PushMontageAsset.Succeeded())
+	{
+		PushMontage = PushMontageAsset.Object;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PushMontageAsset Not Found!"));
+	}
+
 }
 
 

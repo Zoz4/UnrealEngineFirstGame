@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "Blueprint/UserWidget.h"
+#include "UObject/ConstructorHelpers.h"
 #include "MyHUD.generated.h"
 
 /**
@@ -14,4 +16,13 @@ class FIRSTGAME_API AMyHUD : public AHUD
 {
 	GENERATED_BODY()
 	
+
+public:
+	AMyHUD();
+	virtual void BeginPlay() override;
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+
+	UUserWidget* HealthBarWidget;
 };

@@ -57,6 +57,7 @@ public:
 
 protected:
 private:
+	inline void LoadAssets();
 
 // Properties
 public:
@@ -71,13 +72,17 @@ protected:
 	// ¼ýÍ·×é¼þ
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class UArrowComponent* ArrowComp;
+
+	UPROPERTY(BlueprintReadOnly)
+	float MaxHealth = 101.0f;
+	UPROPERTY(BlueprintReadOnly)
+	float Health = MaxHealth;
 	
 private:
 	UPROPERTY()
 	bool bCanPush = true;
 	class UAnimMontage* PushMontage;
-	
-	float Health = 101.0f;
+
 	float Damage = 10.0f;
 
 	FTimerHandle DestoryTimerHandle;

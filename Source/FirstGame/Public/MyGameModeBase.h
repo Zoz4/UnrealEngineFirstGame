@@ -7,6 +7,7 @@
 
 #include "MyPlayerCharacter.h"
 #include "MyEnemyCharacter.h"
+#include "MyHUD.h"
 
 #include "MyGameModeBase.generated.h"
 

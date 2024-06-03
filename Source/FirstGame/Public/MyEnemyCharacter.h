@@ -64,10 +64,10 @@ protected:
 	class UArrowComponent* ArrowComp;
 private:
 	class UAnimMontage* PushMontage;
-	void LoadAssets();
+	inline void LoadAssets();
 
 	bool bCanPush = true;
-	float Health = 10.0f;
+	float Health = 11.0f;
 	float Damage = 10.0f;
 	FTimerHandle DestoryTimerHandle;
 };
