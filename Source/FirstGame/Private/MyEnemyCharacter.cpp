@@ -3,6 +3,7 @@
 
 #include "MyEnemyCharacter.h"
 #include "MyPlayerCharacter.h"
+#include "MyHUD.h"
 
 // Sets default values
 AMyEnemyCharacter::AMyEnemyCharacter()
@@ -10,8 +11,10 @@ AMyEnemyCharacter::AMyEnemyCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	ArrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComp"));
-	AIControllerClass = AMyEnemyAIController::StaticClass();
 
+	AIControllerClass = AMyEnemyAIController::StaticClass();
+	// 必须设置该项，否则生成Enemy时不会自动寻路
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	LoadAssets();
 
 	GetMesh()->SetupAttachment(GetCapsuleComponent());
@@ -36,7 +39,6 @@ void AMyEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-
 	FScriptDelegate PushDelegateSubscriber;
 	PushDelegateSubscriber.BindUFunction(this, FName("OnPushEnded"));
 	GetMesh()->GetAnimInstance()->OnMontageEnded.Add(PushDelegateSubscriber);
@@ -44,7 +46,7 @@ void AMyEnemyCharacter::BeginPlay()
 	FScriptDelegate AttackStartDelegateSubscriber;
 	AttackStartDelegateSubscriber.BindUFunction(this, FName("OnAttackStarted"));
 	GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.Add(AttackStartDelegateSubscriber);
-	
+
 	ChasePlayer();
 	
 }

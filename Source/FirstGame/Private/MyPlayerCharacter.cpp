@@ -3,6 +3,7 @@
 
 #include "MyPlayerCharacter.h"
 #include "MyEnemyCharacter.h"
+#include "MyHUD.h"
 
 // Sets default values
 AMyPlayerCharacter::AMyPlayerCharacter()
@@ -51,15 +52,12 @@ void AMyPlayerCharacter::BeginPlay()
 	FScriptDelegate AttackStartDelegateSubscriber;
 	AttackStartDelegateSubscriber.BindUFunction(this, FName("OnAttackStarted"));
 	GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.Add(AttackStartDelegateSubscriber);
-
-
 }
 
 // Called every frame
 void AMyPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -109,6 +107,7 @@ void AMyPlayerCharacter::Push()
 	{
 		bCanPush = false;
 		GetMesh()->GetAnimInstance()->Montage_Play(PushMontage);
+
 	}
 }
 

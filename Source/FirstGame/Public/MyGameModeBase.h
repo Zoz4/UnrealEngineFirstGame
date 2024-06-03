@@ -8,6 +8,7 @@
 #include "MyPlayerCharacter.h"
 #include "MyEnemyCharacter.h"
 #include "MyHUD.h"
+#include "MyWaveSpawnerActor.h"
 
 #include "MyGameModeBase.generated.h"
 
@@ -21,4 +22,6 @@ class FIRSTGAME_API AMyGameModeBase : public AGameModeBase
 
 	AMyGameModeBase();
 
+protected:
+public:
 };

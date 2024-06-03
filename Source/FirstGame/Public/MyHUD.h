@@ -23,6 +23,9 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> WavesWidgetClass;
 
 	UUserWidget* HealthBarWidget;
+	UUserWidget* WavesWidget;
 };

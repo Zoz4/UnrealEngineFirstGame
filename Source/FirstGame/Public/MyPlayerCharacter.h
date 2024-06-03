@@ -75,6 +75,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	float MaxHealth = 101.0f;
+
 	UPROPERTY(BlueprintReadOnly)
 	float Health = MaxHealth;
 	
@@ -82,8 +83,6 @@ private:
 	UPROPERTY()
 	bool bCanPush = true;
 	class UAnimMontage* PushMontage;
-
 	float Damage = 10.0f;
-
 	FTimerHandle DestoryTimerHandle;
 };

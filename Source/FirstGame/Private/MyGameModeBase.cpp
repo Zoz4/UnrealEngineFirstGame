@@ -8,3 +8,4 @@ AMyGameModeBase::AMyGameModeBase()
 	DefaultPawnClass = AMyPlayerCharacter::StaticClass();
 	HUDClass = AMyHUD::StaticClass();
 }
+

@@ -17,6 +17,16 @@ AMyHUD::AMyHUD()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Not Found Health Bar"));
 	}
+	static ConstructorHelpers::FClassFinder<UUserWidget> WavesWidgetBPClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WB_MyWavesHUD.WB_MyWavesHUD_C'"));
+	if (WavesWidgetBPClass.Class)
+	{
+		WavesWidgetClass = WavesWidgetBPClass.Class;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Not Found Waves Widget"));
+	}
+
 }
 void AMyHUD::BeginPlay()
 {
@@ -28,6 +38,14 @@ void AMyHUD::BeginPlay()
 		if (HealthBarWidget)
 		{
 			HealthBarWidget->AddToViewport();
+		}
+	}
+	if (WavesWidgetClass)
+	{
+		WavesWidget = CreateWidget<UUserWidget>(GetWorld(), WavesWidgetClass);
+		if (WavesWidget)
+		{
+			WavesWidget->AddToViewport();
 		}
 	}
 
