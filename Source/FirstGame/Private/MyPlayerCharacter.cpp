@@ -199,6 +199,27 @@ float AMyPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 		}
 	}
 
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		if (PlayerController)
+		{
+			AMyHUD* MyHUD = Cast<AMyHUD>(PlayerController->GetHUD());
+			if (MyHUD)
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("Found HUD"));
+				UFunction* DamageScreenFunction = MyHUD->WavesWidget->FindFunction(FName("Damage Screen"));
+				if (DamageScreenFunction)
+				{
+					//UE_LOG(LogTemp, Warning, TEXT("Found Function"));
+					MyHUD->WavesWidget->ProcessEvent(DamageScreenFunction, nullptr);
+				}
+				
+			}
+		}
+	}
+
 	return ActualDamage;
 }
 

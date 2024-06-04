@@ -52,9 +52,10 @@ public:
 	void ApplyDamage(AActor* DamagedActor, float BaseDamage);
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	void ChasePlayer();
-	void DestoryCharacter();
+	
 protected:
 private:
+	void DestoryCharacter();
 
 
 public:

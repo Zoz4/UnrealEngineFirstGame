@@ -18,6 +18,8 @@ class FIRSTGAME_API AMyHUD : public AHUD
 	
 
 public:
+	friend class AMyEnemyCharacter;
+	friend class AMyPlayerCharacter;
 	AMyHUD();
 	virtual void BeginPlay() override;
 protected:

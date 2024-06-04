@@ -74,7 +74,7 @@ protected:
 	class UArrowComponent* ArrowComp;
 
 	UPROPERTY(BlueprintReadOnly)
-	float MaxHealth = 101.0f;
+	float MaxHealth = 111.0f;
 
 	UPROPERTY(BlueprintReadOnly)
 	float Health = MaxHealth;

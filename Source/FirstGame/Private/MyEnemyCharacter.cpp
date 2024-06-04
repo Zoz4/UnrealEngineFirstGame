@@ -4,6 +4,9 @@
 #include "MyEnemyCharacter.h"
 #include "MyPlayerCharacter.h"
 #include "MyHUD.h"
+#include "MyWaveSpawnerActor.h"
+#include "EngineUtils.h"
+
 
 // Sets default values
 AMyEnemyCharacter::AMyEnemyCharacter()
@@ -30,8 +33,8 @@ AMyEnemyCharacter::AMyEnemyCharacter()
 	
 
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	
 
+	
 }
 
 // Called when the game starts or when spawned
@@ -55,7 +58,6 @@ void AMyEnemyCharacter::BeginPlay()
 void AMyEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 
@@ -132,6 +134,11 @@ float AMyEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 
 	//UE_LOG(LogTemp, Warning, TEXT("Enemy takes damage %f"), DamageAmount);
 	Health -= ActualDamage;
+
+	// 添加被攻击的动作
+
+
+
 	if (Health <= 0.0f)
 	{
 		GetMesh()->SetSimulatePhysics(true);
@@ -141,16 +148,13 @@ float AMyEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	}
 	else
 	{
-		// 添加被攻击的动作
 		AMyPlayerCharacter* PlayerCharacter = Cast<AMyPlayerCharacter>(DamageCauser);
-
 		if (PlayerCharacter)
 		{
 			FVector AttackDirection = PlayerCharacter->GetActorForwardVector();
 			FVector DamageDirection = AttackDirection * 150.0f + GetActorUpVector() * 100.0f;
-			LaunchCharacter(DamageDirection, false, false);
+			LaunchCharacter(DamageDirection, true, true);
 		}
-
 	}
 	return ActualDamage;
 }
@@ -165,7 +169,23 @@ void AMyEnemyCharacter::ChasePlayer()
 void AMyEnemyCharacter::DestoryCharacter()
 {
 	Destroy();
+
+	TArray<AActor*> FoundEnemyCharacters;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMyEnemyCharacter::StaticClass(), FoundEnemyCharacters);
+
+	int32 EnemyNums = FoundEnemyCharacters.Num();
+
+	if (EnemyNums == 0)
+	{
+		AMyWaveSpawnerActor* WaveSpawnerActor = Cast<AMyWaveSpawnerActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AMyWaveSpawnerActor::StaticClass()));
+		if (WaveSpawnerActor)
+		{
+			WaveSpawnerActor->SpawnEnemiesDelegate.ExecuteIfBound();
+		}
+	}
 }
+
+
 
 void AMyEnemyCharacter::LoadAssets()
 {

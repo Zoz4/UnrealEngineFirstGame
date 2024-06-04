@@ -7,9 +7,14 @@
 
 #include "Components/BillboardComponent.h"
 #include "MyEnemyCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "UObject/ConstructorHelpers.h"
 
 
 #include "MyWaveSpawnerActor.generated.h"
+
+DECLARE_DELEGATE(FSpawnEnemiesSignore);
+
 
 UCLASS()
 class FIRSTGAME_API AMyWaveSpawnerActor : public AActor
@@ -35,9 +40,10 @@ protected:
 private:
 
 public:
-protected:
+	FSpawnEnemiesSignore SpawnEnemiesDelegate;
 	UPROPERTY(BlueprintReadOnly)
-	int32 CurrentWave=0;
+	int32 CurrentWave = 0;
+protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FString> WaveNames;
@@ -48,6 +54,6 @@ private:
 	TArray<FVector> SpawnLocations;
 	UBillboardComponent* BillboardComponent;
 
-
+	USoundWave* ClearStageSound;
 
 };
