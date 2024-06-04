@@ -38,6 +38,7 @@ AMyPlayerCharacter::AMyPlayerCharacter()
 
 	// 死亡物理动画模拟
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
 }
 
 // Called when the game starts or when spawned

@@ -19,21 +19,6 @@ AMyWaveSpawnerActor::AMyWaveSpawnerActor()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Sound Wave Not Found!"));
 	}
-
-
-	FVector Origin = GetActorLocation();
-	float range = 1000.0f;
-	SpawnLocations = TArray<FVector>{
-		Origin + FVector(range, 0.0f, 0.0f),
-		Origin + FVector(-range, 0.0f, 0.0f),
-		Origin + FVector(0.0, range, 0.0f),
-		Origin + FVector(0.0, -range, 0.0f),
-		Origin + FVector(range, range, 0.0f),
-		Origin + FVector(range, -range, 0.0f),
-		Origin + FVector(-range, range, 0.0f),
-		Origin + FVector(-range, -range, 0.0f),
-	};
-	
 	WaveNames.Add("START");
 	WaveNames.Add("Wave 1"); WaveNames.Add("Wave 2"); WaveNames.Add("Wave 3");
 	WaveNames.Add("WIN");
@@ -53,6 +38,19 @@ AMyWaveSpawnerActor::AMyWaveSpawnerActor()
 void AMyWaveSpawnerActor::BeginPlay()
 {
 	Super::BeginPlay();
+	FVector Origin = BillboardComponent->GetComponentLocation();
+	UE_LOG(LogTemp, Warning, TEXT("%f, %f, %f"), Origin.X, Origin.Y, Origin.Z);
+	float range = 1000.0f;
+	SpawnLocations = TArray<FVector>{
+		Origin + FVector(range, 0.0f, 0.0f),
+		Origin + FVector(-range, 0.0f, 0.0f),
+		Origin + FVector(0.0, range, 0.0f),
+		Origin + FVector(0.0, -range, 0.0f),
+		Origin + FVector(range, range, 0.0f),
+		Origin + FVector(range, -range, 0.0f),
+		Origin + FVector(-range, range, 0.0f),
+		Origin + FVector(-range, -range, 0.0f),
+	};
 	SpawnWaves();
 }
 	
@@ -73,12 +71,28 @@ void AMyWaveSpawnerActor::SpawnWaves()
 		// for loop
 		if (CurrentWave < WaveNames.Num())
 		{
+
 			FString WaveName = WaveNames[CurrentWave];
 			int32 EnemyNums = *(WaveEnemyNums.Find(WaveName));
+
+
+			APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+			AMyPlayerCharacter* MyPlayerCharacter = Cast<AMyPlayerCharacter>(PlayerController->GetPawn());
+			FVector PlayerLocation = MyPlayerCharacter->GetActorLocation();
+
 			for (int32 i = 0; i < EnemyNums; ++i)
 			{
 				int32 index = FMath::RandRange(0, SpawnLocations.Num() - 1);
-				World->SpawnActor<AMyEnemyCharacter>(AMyEnemyCharacter::StaticClass(), SpawnLocations[index], SpawnRotation);
+
+				FVector SpawnLocation = SpawnLocations[index];
+				SpawnLocation.X += PlayerLocation.X;
+				SpawnLocation.Y += PlayerLocation.Y;
+
+				FActorSpawnParameters SpawnParameters;
+				SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+				World->SpawnActor<AMyEnemyCharacter>(AMyEnemyCharacter::StaticClass(), SpawnLocation, SpawnRotation, SpawnParameters);
+
+				
 			}
 		}
 	}
