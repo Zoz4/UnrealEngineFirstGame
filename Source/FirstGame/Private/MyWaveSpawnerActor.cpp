@@ -39,7 +39,6 @@ void AMyWaveSpawnerActor::BeginPlay()
 {
 	Super::BeginPlay();
 	FVector Origin = BillboardComponent->GetComponentLocation();
-	UE_LOG(LogTemp, Warning, TEXT("%f, %f, %f"), Origin.X, Origin.Y, Origin.Z);
 	float range = 1000.0f;
 	SpawnLocations = TArray<FVector>{
 		Origin + FVector(range, 0.0f, 0.0f),

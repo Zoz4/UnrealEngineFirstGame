@@ -82,7 +82,12 @@ protected:
 private:
 	UPROPERTY()
 	bool bCanPush = true;
+	
 	class UAnimMontage* PushMontage;
+
+	UClass* CharacterAnimationClass;
 	float Damage = 10.0f;
 	FTimerHandle DestoryTimerHandle;
+	FScriptDelegate PushDelegateSubscriber;
+	FScriptDelegate AttackStartDelegateSubscriber;
 };
