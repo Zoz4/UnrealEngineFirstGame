@@ -1,0 +1,3 @@
+[submodule "Plugins/PrimitiveFountainPlugin"]
+	path = Plugins/PrimitiveFountainPlugin
+	url = https://github.com/Zoz4/UnrealEnginePrimitiveFountain.git
