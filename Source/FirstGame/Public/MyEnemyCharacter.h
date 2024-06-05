@@ -64,6 +64,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class UArrowComponent* ArrowComp;
 private:
+	UClass* CharacterAnimationClass;
 	class UAnimMontage* PushMontage;
 	inline void LoadAssets();
 
@@ -71,4 +72,6 @@ private:
 	float Health = 11.0f;
 	float Damage = 10.0f;
 	FTimerHandle DestoryTimerHandle;
+	FScriptDelegate PushDelegateSubscriber;
+	FScriptDelegate AttackStartDelegateSubscriber;
 };

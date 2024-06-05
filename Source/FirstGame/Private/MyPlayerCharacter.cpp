@@ -21,7 +21,7 @@ AMyPlayerCharacter::AMyPlayerCharacter()
 	GetMesh()->SetupAttachment(GetCapsuleComponent());
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FQuat(FRotator(0.0f, -90.0f, 0.0f)));
 
-	 SpringArmComp->SetupAttachment(GetMesh());
+	SpringArmComp->SetupAttachment(GetMesh());
 	
 	// USpringArmComponent::SocketName: 将相机附加到弹簧末端
 	CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName);
@@ -45,14 +45,23 @@ AMyPlayerCharacter::AMyPlayerCharacter()
 void AMyPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	GetMesh()->SetAnimInstanceClass(CharacterAnimationClass);
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance)
+	{
 
-	FScriptDelegate PushDelegateSubscriber;
-	PushDelegateSubscriber.BindUFunction(this, FName("OnPushEnded"));
-	GetMesh()->GetAnimInstance()->OnMontageEnded.Add(PushDelegateSubscriber);
+		PushDelegateSubscriber.BindUFunction(this, FName("OnPushEnded"));
+		AnimInstance->OnMontageEnded.Add(PushDelegateSubscriber);
 
-	FScriptDelegate AttackStartDelegateSubscriber;
-	AttackStartDelegateSubscriber.BindUFunction(this, FName("OnAttackStarted"));
-	GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.Add(AttackStartDelegateSubscriber);
+		//AttackStartDelegateSubscriber.BindUFunction(this, FName("OnAttackStarted"));
+		//GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.Add(AttackStartDelegateSubscriber);
+		AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &AMyPlayerCharacter::OnAttackStarted);
+
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No AnimInstance"));
+	}
 }
 
 // Called every frame
@@ -240,9 +249,11 @@ void AMyPlayerCharacter::LoadAssets()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("SkeletalMesh Not Found!"));
 	}
-	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBPAsset(TEXT("/Script/Engine.AnimBlueprint'/Game/Characters/Mannequin_UE4/OurAnimations/ABP_Player.ABP_Player'"));
-	if (AnimBPAsset.Succeeded()) {
-		GetMesh()->SetAnimInstanceClass(AnimBPAsset.Object->GeneratedClass);
+	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBPClass(TEXT("/Script/Engine.AnimBlueprint'/Game/Characters/Mannequin_UE4/OurAnimations/ABP_Player.ABP_Player_C'"));
+	if (AnimBPClass.Succeeded()) {
+		GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+		CharacterAnimationClass = AnimBPClass.Class;
+		GetMesh()->SetAnimInstanceClass(CharacterAnimationClass);
 	}
 	else
 	{
