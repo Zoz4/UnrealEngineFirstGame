@@ -37,7 +37,7 @@ void AMyHUD::BeginPlay()
 		HealthBarWidget = CreateWidget<UUserWidget>(GetWorld(), HealthBarWidgetClass);
 		if (HealthBarWidget)
 		{
-			HealthBarWidget->AddToViewport();
+			HealthBarWidget->AddToViewport(-114514);
 		}
 	}
 	if (WavesWidgetClass)
@@ -45,7 +45,7 @@ void AMyHUD::BeginPlay()
 		WavesWidget = CreateWidget<UUserWidget>(GetWorld(), WavesWidgetClass);
 		if (WavesWidget)
 		{
-			WavesWidget->AddToViewport();
+			WavesWidget->AddToViewport(-114514);
 		}
 	}
 
