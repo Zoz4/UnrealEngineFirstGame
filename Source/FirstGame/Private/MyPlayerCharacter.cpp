@@ -2,6 +2,7 @@
 
 
 #include "MyPlayerCharacter.h"
+#include "EnhancedInputComponent.h"
 #include "MyEnemyCharacter.h"
 #include "MyHUD.h"
 
@@ -74,11 +75,13 @@ void AMyPlayerCharacter::Tick(float DeltaTime)
 void AMyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMyPlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMyPlayerCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAction("Push",IE_Pressed, this, &AMyPlayerCharacter::Push);
+	PlayerInputComponent->BindAction("Push", IE_Pressed, this, &AMyPlayerCharacter::Push);
 }
 
 void AMyPlayerCharacter::MoveForward(float AxisValue)
